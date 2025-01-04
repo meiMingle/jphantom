@@ -116,6 +116,15 @@ public class Tests {
 		assertExists(generated, "demo/anno/MyAnno");
 		assertExists(generated, "demo/anno/MyFieldAnno");
 		assertExists(generated, "demo/anno/MyMethodAnno");
+
+		// class MembersWithSameName
+		// - This is common in obfuscated class.
+		assertExists(generated, "demo/MembersWithSameName");
+		assertDefinesField(generated, "demo/MembersWithSameName", "a", "I");
+		assertDefinesField(generated, "demo/MembersWithSameName", "a", "Z");
+		assertDefinesMethod(generated, "demo/MembersWithSameName", "a", "(Ljava/lang/String;)F");
+		assertDefinesMethod(generated, "demo/MembersWithSameName", "a", "(Ljava/lang/String;)B");
+		// Files.write(Paths.get("temp/", "MembersWithSameName.class"), generated.get(Type.getObjectType("demo/MembersWithSameName")));
 	}
 
 	private void assertExists(Map<Type, byte[]> generated, String key) {

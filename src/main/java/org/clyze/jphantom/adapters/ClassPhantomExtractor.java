@@ -607,7 +607,7 @@ public class ClassPhantomExtractor extends ClassVisitor implements Opcodes
                     // Compute new field access using the state machine
 
                     int access = FieldAccessStateMachine.v()
-                        .getEventSequence(name, phantom).moveTo(event).getCurrentAccess();
+                        .getEventSequence(name, phantom,desc).moveTo(event).getCurrentAccess();
 
                     // Chain a field-adder adapter
 

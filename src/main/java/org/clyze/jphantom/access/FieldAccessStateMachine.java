@@ -55,11 +55,12 @@ public class FieldAccessStateMachine extends AccessStateMachine
     {
         private final String fieldName;
         private final Type owner;
-        private String desc; // Lazy initialization
+        private String desc;
 
-        private EventSequence(String name, Type owner) {
+        private EventSequence(String name, Type owner,String desc) {
             this.fieldName = name;
             this.owner = owner;
+            this.desc = desc;
         }
 
         protected EventSequence checkDescriptor(String descriptor)
@@ -93,13 +94,12 @@ public class FieldAccessStateMachine extends AccessStateMachine
 
     private Map<String,EventSequence> sequences = new HashMap<>();
     
-    public EventSequence getEventSequence(String fieldName, Type owner)
+    public EventSequence getEventSequence(String fieldName, Type owner,String desc)
     {
-        String key = owner.getClassName() + ":" + fieldName;
+        String key = owner.getClassName() + ":" + fieldName + ":" + desc;
 
         if (!sequences.containsKey(key))
-            sequences.put(key, new EventSequence(fieldName, owner));
-
+            sequences.put(key, new EventSequence(fieldName, owner,desc));
         return sequences.get(key);
     }
 }

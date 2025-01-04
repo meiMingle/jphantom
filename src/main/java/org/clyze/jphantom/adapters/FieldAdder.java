@@ -24,7 +24,7 @@ public class FieldAdder extends ClassVisitor implements Opcodes
     public FieldVisitor visitField(int access, String name, String desc,
                                    String signature, Object value)
     {
-        if (name.equals(fName))
+        if (name.equals(fName)&& desc.equals(fDesc))
             isFieldPresent = true;
         return super.visitField(access, name, desc, signature, value);
     }
