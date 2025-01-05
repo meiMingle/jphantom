@@ -21,22 +21,22 @@ public class ClassMembers implements Opcodes, Types
         this.hierarchy = hierarchy;
     }
 
-    public FieldSignature lookupField(Type clazz, String fieldName)
+    public FieldSignature lookupField(Type clazz, String fieldName,String desc)
     throws PhantomLookupException
     {
         if (!records.containsKey(clazz))
             throw new IllegalArgumentException("" + clazz);
 
-        return records.get(clazz).lookupField(fieldName);
+        return records.get(clazz).lookupField(fieldName,desc);
     }
 
-    public FieldSignature lookupStaticField(Type clazz, String fieldName)
+    public FieldSignature lookupStaticField(Type clazz, String fieldName,String desc)
     throws PhantomLookupException
     {
         if (!records.containsKey(clazz))
             throw new IllegalArgumentException("" + clazz);
 
-        return records.get(clazz).lookupSField(fieldName);
+        return records.get(clazz).lookupSField(fieldName,desc);
     }
 
 
@@ -72,20 +72,27 @@ public class ClassMembers implements Opcodes, Types
         }
 
         protected void addField(String name, FieldSignature sign) {
-            fields.put(name, sign);
+            fields.put(mkey(name, sign.getDescriptor()), sign);
         }
 
         protected void addMethod(String name, MethodSignature sign) {
             methods.put(mkey(name, sign.getDescriptor()), sign);
         }
 
-        public FieldSignature lookupField(String name) throws PhantomLookupException
+        public FieldSignature lookupField(String name,String desc) throws PhantomLookupException
         {
             Record rec = this;
 
             while (rec != null) {
-                if (rec.fields.containsKey(name))
-                    return rec.fields.get(name);
+
+                String key = mkey(name, desc);
+
+                if (rec.fields.containsKey(key)){
+                    FieldSignature fs = rec.fields.get(key);
+                    if (desc.equals(fs.getDescriptor())) {
+                        return fs;
+                    }
+                }
 
                 Type sc = hierarchy.getSuperclass(rec.type);
 
@@ -103,7 +110,7 @@ public class ClassMembers implements Opcodes, Types
         }
 
 
-        private FieldSignature lookupSField(String name) throws PhantomLookupException
+        private FieldSignature lookupSField(String name,String desc) throws PhantomLookupException
         {
             Collection<Type> ifaces;
 
@@ -125,8 +132,9 @@ public class ClassMembers implements Opcodes, Types
                 Record rec = records.get(iface);
                 assert rec != null;
 
-                if (rec.fields.containsKey(name))
-                    return rec.fields.get(name);
+                String key = mkey(name, desc);
+                if (rec.fields.containsKey(key))
+                    return rec.fields.get(key);
             }
 
             // Randomize the remaining supertypes order
